@@ -1,0 +1,795 @@
+[
+    {
+        "id": "13255e4cfce14d66",
+        "type": "tab",
+        "label": "Flow 3",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "4a61fec701cb8967",
+        "type": "mqtt in",
+        "z": "13255e4cfce14d66",
+        "name": "Mosquitto IoT",
+        "topic": "doctorado/ruben/iot/deteccion",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "3573347a1736b4c3",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 110,
+        "y": 180,
+        "wires": [
+            [
+                "2ab0fc77734d4677",
+                "b03f229af866e171",
+                "bf2288628302c00f",
+                "e105cf26fbf70b82",
+                "70d981e32136d7c8"
+            ]
+        ]
+    },
+    {
+        "id": "2ab0fc77734d4677",
+        "type": "function",
+        "z": "13255e4cfce14d66",
+        "name": "Procesar datos IoT",
+        "func": "let datos = msg.payload;\n\n\n// ---------------------------------------------------------\n// TEMPERATURA\n// ---------------------------------------------------------\n\nlet msgTemperatura = {\n\n    topic: \"Temperatura\",\n\n    payload: datos.temperatura\n\n};\n\n\n// ---------------------------------------------------------\n// HUMEDAD\n// ---------------------------------------------------------\n\nlet msgHumedad = {\n\n    topic: \"Humedad\",\n\n    payload: datos.humedad\n\n};\n\n\n// ---------------------------------------------------------\n// DISTANCIA\n// ---------------------------------------------------------\n\nlet msgDistancia = {\n\n    topic: \"Distancia\",\n\n    payload: datos.distancia\n\n};\n\n\n// ---------------------------------------------------------\n// LUMINOSIDAD\n// ---------------------------------------------------------\n\nlet msgLuminosidad = {\n\n    topic: \"Luminosidad\",\n\n    payload: datos.luminosidad\n\n};\n\n\n// ---------------------------------------------------------\n// MOVIMIENTO\n// ---------------------------------------------------------\n\nlet msgMovimiento = {\n\n    payload: datos.movimiento === 1\n        ? \"Movimiento detectado\"\n        : \"Sin movimiento\",\n\n    topic: \"Movimiento\"\n\n};\n\n\n// ---------------------------------------------------------\n// CLASIFICACIÓN\n// ---------------------------------------------------------\n\nlet msgClasificacion = {\n\n    topic: \"Clasificacion\",\n\n    payload: datos.clasificacion\n\n};\n\n\n// ---------------------------------------------------------\n// ALARMA\n// ---------------------------------------------------------\n\nlet msgAlarma = {\n\n    topic: \"Alarma\",\n\n    payload: datos.alarma\n\n};\n\n\n// ---------------------------------------------------------\n// SALIDAS\n// ---------------------------------------------------------\n\nreturn [\n\n    msgTemperatura,\n    msgHumedad,\n    msgDistancia,\n    msgLuminosidad,\n    msgMovimiento,\n    msgClasificacion,\n    msgAlarma\n\n];",
+        "outputs": 7,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 60,
+        "wires": [
+            [
+                "cc0d5dade2135fd8",
+                "dd0937869d058188"
+            ],
+            [
+                "cc0d5dade2135fd8",
+                "ca9ee3dac559f017"
+            ],
+            [
+                "cc0d5dade2135fd8",
+                "b813dcf1cf6a9c0c"
+            ],
+            [
+                "cc0d5dade2135fd8",
+                "0c2c0e866975842e"
+            ],
+            [
+                "cc0d5dade2135fd8",
+                "656d7dbe03834f0e"
+            ],
+            [
+                "bbca59ae4b1c0e2d"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "cc0d5dade2135fd8",
+        "type": "debug",
+        "z": "13255e4cfce14d66",
+        "name": "Datos Procesados",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 750,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "1e7d24044cc5a02c",
+        "type": "function",
+        "z": "13255e4cfce14d66",
+        "name": "Preparar registro CSV",
+        "func": "let datos = msg.payload;\n\n// Si el mensaje llega como texto JSON, convertirlo a objeto\nif (typeof datos === \"string\") {\n\n    datos = JSON.parse(datos);\n\n}\n\n// Construir el registro que posteriormente irá al CSV\nmsg.payload = {\n\n    fecha_hora: new Date().toLocaleString(\"es-MX\"),\n\n    temperatura: datos.temperatura,\n\n    humedad: datos.humedad,\n\n    distancia: datos.distancia,\n\n    luminosidad: datos.luminosidad,\n\n    movimiento: datos.movimiento,\n\n    muy_cerca: datos.muy_cerca,\n\n    cerca: datos.cerca,\n\n    lejos: datos.lejos,\n\n    oscuro: datos.oscuro,\n\n    tenue: datos.tenue,\n\n    brillante: datos.brillante,\n\n    clasificacion: datos.clasificacion,\n\n    alarma: datos.alarma\n\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 280,
+        "wires": [
+            [
+                "2af6ab2e3ee042d1"
+            ]
+        ]
+    },
+    {
+        "id": "2af6ab2e3ee042d1",
+        "type": "debug",
+        "z": "13255e4cfce14d66",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "5d490e149c423c83",
+        "type": "csv",
+        "z": "13255e4cfce14d66",
+        "name": "Convertir a CSV",
+        "spec": "rfc",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "none",
+        "multi": "one",
+        "ret": "\\r\\n",
+        "temp": "fecha_hora,temperatura,humedad,distancia,luminosidad,movimiento,muy_cerca,cerca,lejos,oscuro,tenue,brillante,clasificacion,alarma,imagen,objeto_detectado,confianza_vision",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 640,
+        "y": 340,
+        "wires": [
+            [
+                "925ee28c72a5cacb"
+            ]
+        ]
+    },
+    {
+        "id": "925ee28c72a5cacb",
+        "type": "file",
+        "z": "13255e4cfce14d66",
+        "name": "Guardar datos IoT CSV",
+        "filename": "/data/datos_iot_distancia_luminosidad_estado.csv",
+        "filenameType": "str",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "utf8",
+        "x": 890,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b03f229af866e171",
+        "type": "function",
+        "z": "13255e4cfce14d66",
+        "name": "Detectar inicio de evento",
+        "func": "// Obtener el estado actual del sensor PIR\nlet actual = Number(msg.payload.movimiento);\n\n// Recuperar el estado anterior almacenado\nlet anterior = context.get(\"movimientoAnterior\") || 0;\n\n// Guardar el estado actual para la siguiente lectura\ncontext.set(\"movimientoAnterior\", actual);\n\n// Detectar solamente la transición 0 → 1\nif (anterior === 0 && actual === 1) {\n    return msg;\n}\n\n// En cualquier otro caso no enviar mensaje\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 200,
+        "wires": [
+            [
+                "1e7d24044cc5a02c"
+            ]
+        ]
+    },
+    {
+        "id": "bf2288628302c00f",
+        "type": "debug",
+        "z": "13255e4cfce14d66",
+        "name": "nuevo temporal",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 320,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "15b7af013d5cdbcb",
+        "type": "mqtt in",
+        "z": "13255e4cfce14d66",
+        "name": "Mosquitto Visión",
+        "topic": "doctorado/ruben/iot/vision",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "3573347a1736b4c3",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 560,
+        "wires": [
+            [
+                "00be0f05f30528bd",
+                "96d5c6dba41ea11d"
+            ]
+        ]
+    },
+    {
+        "id": "00be0f05f30528bd",
+        "type": "debug",
+        "z": "13255e4cfce14d66",
+        "name": "Debug Visión",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "96d5c6dba41ea11d",
+        "type": "function",
+        "z": "13255e4cfce14d66",
+        "name": "Procesar Visión",
+        "func": "// Recibir datos publicados por Python + YOLO\nlet datos = msg.payload;\n\n// Por seguridad, si llega como texto JSON\nif (typeof datos === \"string\") {\n    datos = JSON.parse(datos);\n}\n\n// Verificar que existan detecciones\nif (\n    !datos.detecciones ||\n    datos.detecciones.length === 0\n) {\n    msg.payload = {\n        imagen: datos.imagen || \"Sin imagen\",\n        objeto: \"No detectado\",\n        confianza: 0\n    };\n\n    return msg;\n}\n\n// Tomar la detección con mayor confianza\nlet principal = datos.detecciones.reduce(\n    (mayor, actual) =>\n        actual.confianza > mayor.confianza\n            ? actual\n            : mayor\n);\n\n// Preparar información para el Dashboard\nmsg.payload = {\n    imagen: datos.imagen,\n    imagen_base64: datos.imagen_base64,\n    objeto: principal.objeto,\n    confianza: principal.confianza * 100,\n    detecciones: datos.detecciones\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 460,
+        "wires": [
+            [
+                "00be0f05f30528bd",
+                "76ac7a7790d4569a",
+                "e105cf26fbf70b82"
+            ]
+        ]
+    },
+    {
+        "id": "e105cf26fbf70b82",
+        "type": "function",
+        "z": "13255e4cfce14d66",
+        "name": "Combinar IoT + Visión",
+        "func": "// ======================================================\n// COMBINAR IoT + VISIÓN ARTIFICIAL\n// ======================================================\n\nlet datos = msg.payload;\n\n\n// ======================================================\n// 1. ¿ES UN MENSAJE IoT?\n// Lo identificamos porque contiene temperatura,\n// humedad, distancia, movimiento, etc.\n// ======================================================\n\nif (\n    datos.temperatura !== undefined &&\n    datos.movimiento !== undefined\n) {\n\n    // Guardar temporalmente último estado IoT\n    flow.set(\"ultimo_iot\", datos);\n\n    return null;\n}\n\n\n// ======================================================\n// 2. ¿ES UN MENSAJE DE VISIÓN?\n// Lo identificamos porque contiene imagen y detecciones\n// ======================================================\n\nif (\n    datos.imagen !== undefined &&\n    datos.detecciones !== undefined\n) {\n\n    // Guardar resultado de visión\n    flow.set(\"ultima_vision\", datos);\n\n\n    // Recuperar último mensaje IoT\n    let iot = flow.get(\"ultimo_iot\");\n\n\n    // Si todavía no existe IoT, esperamos\n    if (!iot) {\n        return null;\n    }\n\n\n    // ==================================================\n    // 3. CONSTRUIR JSON COMBINADO\n    // ==================================================\n\n    msg.payload = {\n\n        fecha_hora: new Date().toLocaleString(\"es-MX\"),\n\n        // -------- SENSORES --------\n\n        temperatura: iot.temperatura,\n        humedad: iot.humedad,\n        distancia: iot.distancia,\n        luminosidad: iot.luminosidad,\n        movimiento: iot.movimiento,\n\n\n        // -------- LÓGICA DIFUSA --------\n\n        muy_cerca: iot.muy_cerca,\n        cerca: iot.cerca,\n        lejos: iot.lejos,\n\n        oscuro: iot.oscuro,\n        tenue: iot.tenue,\n        brillante: iot.brillante,\n\n        clasificacion: iot.clasificacion,\n        alarma: iot.alarma,\n\n\n        // -------- VISIÓN ARTIFICIAL --------\n\n        imagen: datos.imagen,\n\n        objeto_detectado: datos.objeto,\n\n        confianza_vision: datos.confianza,\n\n        detecciones: datos.detecciones\n    };\n\n\n    // Nuevo tópico interno\n    msg.topic = \"evento_combinado\";\n\n\n    // ==================================================\n    // 4. ENVIAR JSON COMBINADO\n    // ==================================================\n\n    return msg;\n}\n\n\n// Mensaje desconocido\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 420,
+        "wires": [
+            [
+                "fad89e982b236ebe",
+                "5d490e149c423c83"
+            ]
+        ]
+    },
+    {
+        "id": "fad89e982b236ebe",
+        "type": "debug",
+        "z": "13255e4cfce14d66",
+        "name": "Debug JSON combinado",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 770,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "70d981e32136d7c8",
+        "type": "function",
+        "z": "13255e4cfce14d66",
+        "name": "Información Servidor",
+        "func": "let ahora = new Date();\n\nmsg.payload = {\n    servidor: \"RENDER CLOUD\",\n    fecha_hora: ahora.toLocaleString(\"es-MX\", {\n        timeZone: \"America/Mexico_City\"\n    })\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 140,
+        "y": 280,
+        "wires": [
+            [
+                "e1900366285c730f"
+            ]
+        ]
+    },
+    {
+        "id": "b813dcf1cf6a9c0c",
+        "type": "ui-gauge",
+        "z": "13255e4cfce14d66",
+        "name": "Distancia",
+        "group": "0f4f8687bd61d0a1",
+        "order": 3,
+        "value": "payload",
+        "valueType": "msg",
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Distancia",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "cm",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#5cd65c",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "4",
+                "color": "#ffc800",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "7",
+                "color": "#ea5353",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "400",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 760,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0c2c0e866975842e",
+        "type": "ui-gauge",
+        "z": "13255e4cfce14d66",
+        "name": "Luminosidad",
+        "group": "0f4f8687bd61d0a1",
+        "order": 4,
+        "value": "payload",
+        "valueType": "msg",
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Luminosidad",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "ADC",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#5cd65c",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "4",
+                "color": "#ffc800",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "7",
+                "color": "#ea5353",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "4095",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 770,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "dd0937869d058188",
+        "type": "ui-gauge",
+        "z": "13255e4cfce14d66",
+        "name": "Temperatura",
+        "group": "0f4f8687bd61d0a1",
+        "order": 1,
+        "value": "payload",
+        "valueType": "msg",
+        "width": 3,
+        "height": "3",
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Temperatura",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "°C",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#5cd65c",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "4",
+                "color": "#ffc800",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "7",
+                "color": "#ea5353",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "60",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 770,
+        "y": 20,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ca9ee3dac559f017",
+        "type": "ui-gauge",
+        "z": "13255e4cfce14d66",
+        "name": "Humedad",
+        "group": "0f4f8687bd61d0a1",
+        "order": 2,
+        "value": "payload",
+        "valueType": "msg",
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Humedad",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "%",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#5cd65c",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "4",
+                "color": "#ffc800",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "7",
+                "color": "#ea5353",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "100",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 760,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "656d7dbe03834f0e",
+        "type": "ui-template",
+        "z": "13255e4cfce14d66",
+        "group": "ae8459720b4fc426",
+        "page": "",
+        "ui": "",
+        "name": "Estado Movimiento",
+        "order": 2,
+        "width": "0",
+        "height": "0",
+        "head": "",
+        "format": "<template>\n    <div class=\"tarjeta-movimiento\"\n         :class=\"msg.payload === 'Movimiento detectado' ? 'activo' : 'inactivo'\">\n\n        <div class=\"titulo\">\n            Estado del sensor PIR\n        </div>\n\n        <div class=\"icono\">\n            {{ msg.payload === 'Movimiento detectado' ? '🚨' : '✅' }}\n        </div>\n\n        <div class=\"estado\">\n            {{ msg.payload === 'Movimiento detectado' ? 'MOVIMIENTO DETECTADO' : 'SIN MOVIMIENTO' }}\n        </div>\n\n    </div>\n</template>\n\n<style>\n.tarjeta-movimiento {\n    width: 100%;\n    height: 100%;\n    min-height: 180px;\n\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: center;\n\n    border-radius: 18px;\n    text-align: center;\n    padding: 20px;\n    box-sizing: border-box;\n}\n\n.inactivo {\n    background: #e8f5e9;\n    border: 3px solid #2e7d32;\n}\n\n.activo {\n    background: #ffebee;\n    border: 3px solid #c62828;\n}\n\n.titulo {\n    font-size: 22px;\n    font-weight: 600;\n    margin-bottom: 15px;\n}\n\n.icono {\n    font-size: 50px;\n    margin-bottom: 10px;\n}\n\n.estado {\n    font-size: 28px;\n    font-weight: bold;\n}\n</style>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 790,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bbca59ae4b1c0e2d",
+        "type": "ui-template",
+        "z": "13255e4cfce14d66",
+        "group": "ae8459720b4fc426",
+        "page": "",
+        "ui": "",
+        "name": "Evaluación del sistema inteligente”",
+        "order": 3,
+        "width": "0",
+        "height": "0",
+        "head": "",
+        "format": "<template>\n\n    <div\n        class=\"evaluacion\"\n        :class=\"{\n            normal: msg.payload == 'Normal',\n            movimiento: msg.payload == 'Movimiento cercano' ||\n                        msg.payload == 'Movimiento lejano',\n            precaucion: msg.payload == 'Posible intrusion' ||\n                        msg.payload == 'Posible anomalia',\n            peligro: msg.payload == 'Intruso'\n        }\"\n    >\n\n        <div class=\"titulo\">\n            Evaluación del sistema inteligente\n        </div>\n\n        <div class=\"resultado\">\n            {{ msg.payload }}\n        </div>\n\n    </div>\n\n</template>\n\n\n<style>\n\n.evaluacion {\n    width: 100%;\n    padding: 20px;\n    text-align: center;\n    border-radius: 18px;\n    box-sizing: border-box;\n    border: 3px solid;\n    transition: all 0.4s ease;\n}\n\n/* NORMAL */\n.normal {\n    background-color: #e8f5e9;\n    border-color: #2e7d32;\n}\n\n/* MOVIMIENTO */\n.movimiento {\n    background-color: #e3f2fd;\n    border-color: #1976d2;\n}\n\n/* PRECAUCIÓN */\n.precaucion {\n    background-color: #fff3e0;\n    border-color: #ef6c00;\n}\n\n/* PELIGRO */\n.peligro {\n    background-color: #ffebee;\n    border-color: #c62828;\n}\n\n.titulo {\n    font-size: 24px;\n    font-weight: bold;\n    margin-bottom: 18px;\n}\n\n.resultado {\n    font-size: 30px;\n    font-weight: bold;\n}\n\n</style>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 820,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "76ac7a7790d4569a",
+        "type": "ui-template",
+        "z": "13255e4cfce14d66",
+        "group": "ae8459720b4fc426",
+        "page": "",
+        "ui": "",
+        "name": "Visión Artificial",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "head": "",
+        "format": "<div style=\"\n    background:#eaf4ff;\n    border:3px solid #1976d2;\n    border-radius:18px;\n    padding:20px;\n    display:flex;\n    align-items:center;\n    justify-content:center;\n    gap:40px;\n\">\n\n    <!-- COLUMNA IZQUIERDA -->\n    <div style=\"\n        flex:1;\n        text-align:center;\n    \">\n\n        <h2>📷 VISIÓN ARTIFICIAL</h2>\n\n        <div>\n            Imagen:\n            <b>{{ msg.payload.imagen }}</b>\n        </div>\n\n        <p>Objeto detectado</p>\n\n        <div style=\"\n            font-size:32px;\n            font-weight:bold;\n        \">\n            {{ msg.payload.objeto.toUpperCase() }}\n        </div>\n\n        <p>\n            Confianza:\n            <b>{{ Number(msg.payload.confianza).toFixed(2) }} %</b>\n        </p>\n\n    </div>\n\n\n    <!-- COLUMNA DERECHA -->\n    <div style=\"\n        flex:1;\n        text-align:center;\n    \">\n\n        <img\n            :src=\"'data:image/jpeg;base64,' + msg.payload.imagen_base64\"\n            style=\"\n                max-width:400px;\n                max-height:300px;\n                width:auto;\n                height:auto;\n                object-fit:contain;\n                border-radius:12px;\n            \"\n        >\n\n    </div>\n\n</div>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 620,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e1900366285c730f",
+        "type": "ui-template",
+        "z": "13255e4cfce14d66",
+        "group": "d59a7fac74f97d23",
+        "page": "",
+        "ui": "",
+        "name": "Información Dashboard",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "head": "",
+        "format": "<div style=\"\n    width: 100%;\n    padding: 12px 20px;\n    border: 1px solid #bdbdbd;\n    border-radius: 10px;\n    text-align: center;\n    font-size: 18px;\n\">\n\n    <div style=\"font-weight: bold; font-size: 20px;\">\n        {{ msg.payload.servidor }}\n    </div>\n\n    <div style=\"margin-top: 6px;\">\n        🕒 Último mensaje MQTT recibido:\n        <strong>{{ msg.payload.fecha_hora }}</strong>\n    </div>\n\n</div>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 150,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3573347a1736b4c3",
+        "type": "mqtt-broker",
+        "name": "test.mosquitto.org",
+        "broker": "test.mosquitto.org",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "0f4f8687bd61d0a1",
+        "type": "ui-group",
+        "name": "Monitoreo IoT",
+        "page": "33d86d82daafb2ad",
+        "width": "6",
+        "height": "6",
+        "order": 2,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "ae8459720b4fc426",
+        "type": "ui-group",
+        "name": "Estado Inteligente",
+        "page": "33d86d82daafb2ad",
+        "width": 6,
+        "height": "6",
+        "order": 3,
+        "showTitle": true,
+        "className": "",
+        "visible": true,
+        "disabled": true,
+        "groupType": "default"
+    },
+    {
+        "id": "d59a7fac74f97d23",
+        "type": "ui-group",
+        "name": "Información del Servidor",
+        "page": "33d86d82daafb2ad",
+        "width": "12",
+        "height": 1,
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "33d86d82daafb2ad",
+        "type": "ui-page",
+        "name": "Sistema IoT Inteligente",
+        "ui": "69d50d74968d6069",
+        "path": "/page2",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "ca19a841ebd35da4",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": true,
+        "disabled": false
+    },
+    {
+        "id": "69d50d74968d6069",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "ca19a841ebd35da4",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#fcfcfd",
+            "primary": "#0d74ce",
+            "bgPage": "#f9f9fb",
+            "groupBg": "#ffffff",
+            "groupOutline": "#d9d9e0"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "bdd43656b935ddb1",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@flowfuse/node-red-dashboard": "1.31.0"
+        }
+    }
+]
