@@ -637,6 +637,72 @@
         ]
     },
     {
+        "id": "8d963509cef0f0d6",
+        "type": "inject",
+        "z": "13255e4cfce14d66",
+        "name": "Leer CSV Docker",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "iso",
+        "payloadType": "date",
+        "x": 940,
+        "y": 500,
+        "wires": [
+            [
+                "db1732ea19f709e7"
+            ]
+        ]
+    },
+    {
+        "id": "db1732ea19f709e7",
+        "type": "file in",
+        "z": "13255e4cfce14d66",
+        "name": "Leer /data/datos_csv",
+        "filename": "/data/datos_iot_distancia_luminosidad_estado.csv",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 560,
+        "wires": [
+            [
+                "3be00c8ea6256169"
+            ]
+        ]
+    },
+    {
+        "id": "3be00c8ea6256169",
+        "type": "debug",
+        "z": "13255e4cfce14d66",
+        "name": "debug docker",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 940,
+        "y": 640,
+        "wires": []
+    },
+    {
         "id": "3573347a1736b4c3",
         "type": "mqtt-broker",
         "name": "test.mosquitto.org",
@@ -785,7 +851,7 @@
         }
     },
     {
-        "id": "bdd43656b935ddb1",
+        "id": "90742fa8a9ec0c19",
         "type": "global-config",
         "env": [],
         "modules": {
